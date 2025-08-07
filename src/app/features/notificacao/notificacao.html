@@ -1,0 +1,84 @@
+<div class="notif">
+  <header class="notif__header" aria-label="Seção de notificações">
+    <img src="/logo.jpg" alt="VR Software" class="notif__logo" />
+    <div class="notif__titles">
+      <h2 class="notif__title">Notificações</h2>
+      <p class="notif__subtitle">
+        Envie uma mensagem e acompanhe o status em tempo real.
+      </p>
+    </div>
+  </header>
+
+  <!-- Card do formulário -->
+  <section class="card card--form" aria-label="Formulário de envio">
+    <form class="form" (submit)="onSubmit($event)">
+      <label class="form__label" for="conteudo">Conteúdo da mensagem</label>
+
+      <div class="form__row">
+        <input
+          id="conteudo"
+          type="text"
+          class="input"
+          placeholder="Digite sua mensagem..."
+          [ngModel]="conteudo()"
+          (ngModelChange)="conteudo.set($event)"
+          name="conteudo"
+          autocomplete="off"
+          aria-describedby="hint"
+        />
+
+        <button
+          type="submit"
+          class="btn btn--primary"
+          [disabled]="loading() || !conteudo().trim()"
+          aria-live="polite"
+        >
+          {{ loading() ? "Enviando..." : "Enviar" }}
+          <span class="btn__icon" aria-hidden="true">➜</span>
+        </button>
+      </div>
+
+      <small id="hint" class="form__hint">
+        Seu pedido será processado de forma assíncrona (1–2s) e aparecerá abaixo
+        com o status.
+      </small>
+    </form>
+  </section>
+
+  <!-- Lista de itens -->
+  <section class="card card--list" aria-label="Histórico de notificações">
+    @if (notificacoes().length > 0) {
+    <ul class="list" role="list">
+      @for (n of notificacoes(); track n.mensagemId) {
+      <li class="list__item">
+        <div class="list__left">
+          <div class="list__msg" title="{{ n.conteudoMensagem }}">
+            {{ n.conteudoMensagem }}
+          </div>
+          <div class="list__id">
+            ID: <code>{{ n.mensagemId }}</code>
+          </div>
+        </div>
+
+        <span
+          class="badge"
+          [class.badge--ok]="n.status === 'PROCESSADO_SUCESSO'"
+          [class.badge--fail]="n.status === 'FALHA_PROCESSAMENTO'"
+          [class.badge--wait]="n.status === 'AGUARDANDO_PROCESSAMENTO'"
+          title="{{ labelDeStatus(n.status) }}"
+        >
+          <span class="badge__icon">{{ iconeDeStatus(n.status) }}</span>
+          <span class="badge__text">{{ labelDeStatus(n.status) }}</span>
+        </span>
+      </li>
+      }
+    </ul>
+    } @else {
+    <div class="empty">
+      <img src="/logo.jpg" alt="" class="empty__logo" />
+      <p class="empty__text">Nenhuma notificação enviada ainda.</p>
+      <p class="empty__hint">Envie a primeira para ver o fluxo funcionando.</p>
+    </div>
+    }
+  </section>
+</div>
